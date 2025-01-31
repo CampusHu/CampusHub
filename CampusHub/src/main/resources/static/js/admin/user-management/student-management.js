@@ -158,6 +158,8 @@ document.getElementById('admin-stuinfo-newBtn').addEventListener('click', functi
 
     // 실시간 반영 이벤트 추가
     addRealTimeEditing(newRow);
+
+    alert('새로운 학생 정보를 추가했습니다. 내용을 확인하세요.');
 });
 
 
@@ -320,55 +322,4 @@ document.getElementById('admin-stuinfo-delBtn').addEventListener('click', functi
                 alert('학생 정보를 삭제하는 중 오류가 발생했습니다.');
             });
     }
-});
-
-document.querySelector('.search-container button').addEventListener('click', function () {
-    const searchInput = document.querySelector('.search-container input').value.trim(); // 검색어 입력값 가져오기
-
-    if (!searchInput) {
-        alert("학번을 입력하세요.");
-        return;
-    }
-
-    const url = `/api/admin/student/${searchInput}`; // 학번으로 단건 조회 API
-    const token = localStorage.getItem('jwtToken'); // JWT 토큰 가져오기
-
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("서버 응답 데이터:", data);
-
-            const student = data.data; // 응답 데이터에서 학생 정보 가져오기
-            const tableBody = document.getElementById('admin-stuinfo-TableBody');
-            tableBody.innerHTML = ''; // 기존 데이터 초기화
-
-            // 학생 정보 테이블에 추가 (userName과 deptName 수정)
-            const row = document.createElement('tr');
-            row.dataset.id = student.userNum;
-            row.innerHTML = `
-            <td><input type="checkbox" class="student-checkbox"></td>
-            <td>1</td>
-            <td data-field="name" style="text-align: left;">${student.userName}</td> <!-- userName 수정 -->
-            <td data-field="studentId">${student.userNum}</td>
-            <td data-field="department">${student.deptName}</td>
-            <td data-field="status">${student.grade}</td> <!-- status가 아니라 grade 사용 -->
-            <td data-field="remarks">${student.address || ''}</td> <!-- remarks 대신 address -->
-        `;
-            tableBody.appendChild(row);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('학생 정보를 불러오는 중 오류가 발생했습니다.');
-        });
 });
